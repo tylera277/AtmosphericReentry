@@ -1,0 +1,47 @@
+
+# Spacecraft Reentry Simulation Configuration
+
+
+# Parameters for the space craft thats reentering
+spacecraft:
+
+  initial_state:
+    position: [6771000, 0, 0]
+    velocity: [0, 7670, 0]
+    #drag_coefficient: 1
+    #cross_sectional_area: 1
+    #mass: 1
+
+# Parameters of the planet Earth
+planet:
+  #position: [0, 0, 0]  (Im saying the Earth is the origin of the coordinate system)
+  mass: 5.972e24 # kg
+  radius: 6371000 # meters
+
+  atmosphere:
+  # will add later
+
+
+# Simulation control parameters
+simulation:
+
+  # Time settings
+  start_time: 0  # seconds
+  end_time: 18000000  # seconds
+  time_step_size: 1000  # seconds
+
+  integrator: 
+    type: "RK4"
+    relative_tolerance: 1.0e-6
+    absolute_tolerance: 1.0e-8
+    max_step_attempts: 10
+
+  physics:
+    gravity_model: "point_mass"
+    include_drag: False
+    include_lift: False
+    include_heating: False
+    include_coriolis: False
+
+  output:
+    save_frequency: 10
