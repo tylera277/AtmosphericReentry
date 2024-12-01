@@ -8,7 +8,6 @@ spacecraft:
   initial_state:
     position: [6771000, 0, 0]
     #velocity: [0, 7670, 0]
-    #velocity: [0, 10000, 0]
     velocity: [0, 10000, 0]
     #drag_coefficient: 1
     #cross_sectional_area: 1

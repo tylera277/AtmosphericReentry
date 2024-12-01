@@ -1,4 +1,6 @@
 
+from typing import List, Tuple, Optional
+
 import matplotlib.pyplot as plt
 import numpy as np
 import plotly.express as px
@@ -13,7 +15,7 @@ class Plotting:
     
     """
 
-    def simple_orbital_trajectory(self, list_of_positions, display_plot:bool):
+    def simple_orbital_trajectory(self, list_of_positions: List[np.ndarray], display_plot: bool):
         """
         Plotting a list of the spacecrafts positions calculated over the simulation,
         and adding in a blank sphere to mimic the Earth.
@@ -36,7 +38,6 @@ class Plotting:
         z_sphere = 6371000 * np.outer(np.ones(np.size(u)), np.cos(v))
     
         ax.plot_surface(x_sphere, y_sphere, z_sphere, alpha=0.3)
-
 
         # Extracting the x,y,z positions from the list received
         x_positions = [item[0] for item in list_of_positions]

@@ -1,15 +1,14 @@
 
 import numpy as np
 
+from .config.planet_config import PlanetConfig
+
 
 class Planet:
-    def __init__(self, config: dict):
-        "Initialize parameters for the planet from configuration file."
-        try:
-            self.mass = float(config['mass'])
-            self.radius = float(config['radius'])
-        except KeyError as e:
-            print(f"Missing configuration parameter: {e}")
+    def __init__(self, config: PlanetConfig):
+        
+        self.mass = config.mass
+        self.radius = config.radius
     
 
     def calculate_gravity(self, position_of_object: np.ndarray) -> np.ndarray:

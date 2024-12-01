@@ -1,6 +1,12 @@
 
 import numpy as np
 
+from dataclasses import dataclass
+from typing import List, Tuple, Optional
+from abc import ABC, abstractmethod
+
+from .config.simulation_config import SimulationConfig
+
 from .spacecraft import Spacecraft
 from .planet import Planet
 
@@ -15,7 +21,10 @@ class Simulation:
     
     """
 
-    def __init__(self, config: dict, spacecraft: Spacecraft, planet: Planet):
+    def __init__(self, 
+                 config: SimulationConfig, 
+                 spacecraft: Spacecraft, 
+                 planet: Planet) -> None:
         """
         Initialize the simulation with configuration parameters and objects.
 
@@ -34,22 +43,21 @@ class Simulation:
         self.spacecraft = spacecraft
         self.planet = planet
 
-
-        try:
-            self.dt = float(config['time_step_size'])
-            self.start_time = float(config['start_time'])
-            self.end_time = float(config['end_time'])
-        except KeyError as e:
-            print(f"Missing configuration parameter: {e}")
+        self.config = config
+        
 
 
         # Initialize simulation history arrays
-        self.time_elapsed = self.end_time  # Updated if the simulation terminates early
-        self.position = []
-        self.velocity = []
+        self.time_elapsed = self.config.end_time  # Updated if the simulation terminates early
+        self._times: List[float] = []
+        self._position: List[np.ndarray] = []
+        self._velocity: List[np.ndarray] = []
+
+        self._is_complete: bool = False
+        self._termination_reason: str = "Not started."
 
 
-    def run(self):
+    def run(self):# -> None:
         """
         Execute the simulation using a 4th order Runge-Kutta integrator.
 
@@ -58,43 +66,45 @@ class Simulation:
         for later analysis.
 
         Returns:
-            None: Results are stored in self.position and self.velocity.
+            None: Results are stored in self._position and self._velocity.
 
         
         """
 
-
-        time = self.start_time        
-
+        current_time = self.config.start_time      
 
         # Main simulation loop
-        while time < self.end_time:
-    
-            k_r, k_v = self.rungeKutta4()
-            
-            # Update the spacecraft state using RK4 weighted averages
-            self.spacecraft.position += ((self.dt / 6.0) * (k_r[1] + 2*k_r[2] + 2*k_r[3] + k_r[4]))
-            self.spacecraft.velocity += ((self.dt / 6.0) * (k_v[1] + 2*k_v[2] + 2*k_v[3] + k_v[4]))
-            
-            # Store current state
-            self.position.append((self.spacecraft.position).tolist())
-            self.velocity.append((self.spacecraft.velocity).tolist())
-        
-            
-            # Check for surface impact.
-            if np.linalg.norm(self.spacecraft.position) <= self.planet.radius:
-                print("Hit the surface! Ending simulation...")
-                print(self.spacecraft.position)
+        while current_time < self.config.end_time:
 
-                self.time_elapsed = time
+            # Try to advance one time step
+            try:
+                self._integrate_step()
+            except ValueError as e:
+                self._termination_reason = f"Integration error: {str(e)}"
+
+            current_time += self.config.time_step_size
+            self._store_state(current_time)
+
+            #print(self.spacecraft.position)
+
+            # Check for termination conditions.
+            if self._check_surface_impact():
+                self._termination_reason = "Surface Impact"
                 break
-            
 
-            time += self.dt
-            
+        self._termination_reason = "Simulation complete."
+
+
+    def _integrate_step(self) -> None:
+        
+        k_r, k_v = self._calculate_rungeKutta4_terms()
+
+        # Update the spacecraft state using RK4 weighted averages
+        self.spacecraft.position += ((self.config.time_step_size / 6.0) * (k_r[1] + 2*k_r[2] + 2*k_r[3] + k_r[4]))
+        self.spacecraft.velocity += ((self.config.time_step_size / 6.0) * (k_v[1] + 2*k_v[2] + 2*k_v[3] + k_v[4]))
 
     
-    def rungeKutta4(self):
+    def _calculate_rungeKutta4_terms(self) -> Tuple[List[np.ndarray], List[np.ndarray]]:
         """
         Perform one step of the 4ht order Runge-Kutta integration.
 
@@ -119,16 +129,38 @@ class Simulation:
         k_r[1] = self.spacecraft.velocity
 
         # Second stage
-        k_v[2] = self.planet.calculate_gravity( self.spacecraft.position + (self.dt / 2.0)*k_r[1] )
-        k_r[2] = self.spacecraft.velocity + k_v[1] * (self.dt / 2.0)
+        k_v[2] = self.planet.calculate_gravity( self.spacecraft.position + (self.config.time_step_size / 2.0)*k_r[1] )
+        k_r[2] = self.spacecraft.velocity + k_v[1] * (self.config.time_step_size / 2.0)
 
         # Third stage
-        k_v[3] = self.planet.calculate_gravity( self.spacecraft.position + (self.dt / 2.0)*k_r[2] )
-        k_r[3] = self.spacecraft.velocity + k_v[2] * (self.dt / 2.0)
+        k_v[3] = self.planet.calculate_gravity( self.spacecraft.position + (self.config.time_step_size / 2.0)*k_r[2] )
+        k_r[3] = self.spacecraft.velocity + k_v[2] * (self.config.time_step_size / 2.0)
 
         # Fourth stage
-        k_v[4] = self.planet.calculate_gravity( self.spacecraft.position + (self.dt)*k_r[3] )
-        k_r[4] = self.spacecraft.velocity + k_v[3] * self.dt
+        k_v[4] = self.planet.calculate_gravity( self.spacecraft.position + (self.config.time_step_size)*k_r[3] )
+        k_r[4] = self.spacecraft.velocity + k_v[3] * self.config.time_step_size
 
         return k_r, k_v
+
+    def _store_state(self, time:float) -> None:
+        self._times.append(time)
+        self._position.append(self.spacecraft.position.copy())
+        self._velocity.append(self.spacecraft.velocity.copy())
+        
+
+    def _check_surface_impact(self) -> bool:
+        return (np.linalg.norm(self.spacecraft.position) <= self.planet.radius)
+    
+    def get_trajectory(self) -> List[np.ndarray]:
+        """ 
+        A public, safe way for the position history of the spacecraft that was stored, to be accessed
+        for use in external applications.
+        """
+        return self._position
+
+
+    # TODO: I believe this needs to be rewritten as the logic is flawed, or rather not complete.
+    def _check_if_will_eventually_hit_planet(self) -> bool:
+        return (np.linalg.norm(self.spacecraft.velocity)) < np.sqrt( ((6.674e-11) * self.planet.mass) / np.linalg.norm(self.spacecraft.position))
+    
 

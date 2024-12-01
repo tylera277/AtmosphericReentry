@@ -16,48 +16,33 @@ from src.planet import Planet
 from src.simulation import Simulation
 from src.plotting import Plotting
 
+from src.config.configuration_manager import ConfigurationManager
 
 
 
 def main():
 
-    try:
-        with open('config/config.yaml', 'r') as file:
-            config = yaml.safe_load(file)
-
-    except Exception as e:
-        print(f"Failed to load configuration file: {e}")
-
-    try:
-        spacecraft = Spacecraft(config['spacecraft'])
-        planet = Planet(config['planet'])
-        simulation = Simulation(config['simulation'],
-                                spacecraft = spacecraft,
-                                planet = planet)
-        plotter = Plotting()
+    config = ConfigurationManager("config/config.yaml")
+    
+    
+    spacecraft = Spacecraft(config.spacecraft)
+    planet = Planet(config.planet)
+    simulation = Simulation(config.simulation,
+                            spacecraft = spacecraft,
+                            planet = planet)
+    
+    plotter = Plotting()
 
 
-        # Run the Runge-Kutta orbital calculation
-        simulation.run()
-
-
-        # Give the last position of the spacecraft and total time elapsed,
-        # and return the latitude and longitude point on the actual Earth
-        lat, lon = plotter.crash_point_latLon_on_actual_earth(simulation.position[-1], simulation.time_elapsed)
-        print("Lat, lon: ", lat,", ", lon)
-
-        
-        plotter.plot_point_on_map(lat, lon, False)
+    # Run the Runge-Kutta orbital calculation
+    simulation.run()
 
 
 
+    # Plot the results of the simulation, namely the position of the spacecraft
+    plotter.simple_orbital_trajectory(simulation.get_trajectory(), display_plot=True)
 
-        # Plot the results of the simulation, namely the position of the spacecraft
-        plotter.simple_orbital_trajectory(simulation.position, display_plot=True)
-
-    except Exception as e:
-        print(f"Unexpected error: {e}")
-
+    
 
 if __name__ == "__main__":
     main()
