@@ -7,7 +7,9 @@ spacecraft:
 
   initial_state:
     position: [6771000, 0, 0]
-    velocity: [0, 7670, 0]
+    #velocity: [0, 7670, 0]
+    #velocity: [0, 10000, 0]
+    velocity: [0, 10000, 0]
     #drag_coefficient: 1
     #cross_sectional_area: 1
     #mass: 1
@@ -27,8 +29,8 @@ simulation:
 
   # Time settings
   start_time: 0  # seconds
-  end_time: 18000000  # seconds
-  time_step_size: 1000  # seconds
+  end_time: 10000  # seconds
+  time_step_size: 100  # seconds
 
   integrator: 
     type: "RK4"
