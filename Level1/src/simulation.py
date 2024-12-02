@@ -76,7 +76,7 @@ class Simulation:
         # Main simulation loop
         while current_time < self.config.end_time:
 
-            # Try to advance one time step
+            # Advance one time step
             try:
                 self._integrate_step()
             except ValueError as e:
@@ -85,9 +85,8 @@ class Simulation:
             current_time += self.config.time_step_size
             self._store_state(current_time)
 
-            #print(self.spacecraft.position)
-
             # Check for termination conditions.
+            # (i.e. it hit the planets surface)
             if self._check_surface_impact():
                 self._termination_reason = "Surface Impact"
                 break
@@ -96,7 +95,9 @@ class Simulation:
 
 
     def _integrate_step(self) -> None:
-        
+        """
+        Gets the k terms and then updates the positions and velocities of the spacecraft
+        """
         k_r, k_v = self._calculate_rungeKutta4_terms()
 
         # Update the spacecraft state using RK4 weighted averages
@@ -106,10 +107,10 @@ class Simulation:
     
     def _calculate_rungeKutta4_terms(self) -> Tuple[List[np.ndarray], List[np.ndarray]]:
         """
-        Perform one step of the 4ht order Runge-Kutta integration.
-
-        This method calculates the four stages of the RK4 method for both
-        position and velocity updates. The k terms represent the slopes at
+        The math for calculating each of the interconnected components k terms,
+        that are needed for the runge kutta implementation.
+        
+        The k terms represent the slopes at
         different points within the time step.
 
         Returns:
@@ -143,12 +144,21 @@ class Simulation:
         return k_r, k_v
 
     def _store_state(self, time:float) -> None:
+        """
+        Stores the time, position, and velocity of the spacecraft for other analysis purposes.
+        """
         self._times.append(time)
         self._position.append(self.spacecraft.position.copy())
         self._velocity.append(self.spacecraft.velocity.copy())
         
 
     def _check_surface_impact(self) -> bool:
+        """
+        Checks to see whether the distance from the center of the planet to the spacecrafts
+        current position is less than its radius, and given its a sphere, that would mean
+        it has "hit" the surface.
+        
+        """
         return (np.linalg.norm(self.spacecraft.position) <= self.planet.radius)
     
     def get_trajectory(self) -> List[np.ndarray]:

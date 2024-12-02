@@ -10,8 +10,6 @@ import pandas as pd
 class Plotting:
     """
     A class to house all plotting related materials needed at times throughout the project.
-
-
     
     """
 
@@ -98,14 +96,14 @@ class Plotting:
         """
         At least for now, this function plots the crash point on an actual map of the Earth.
 
-        TODO: I would like to eventually add a dotted line on the same plot so that 
-        one can see its trajectory before it hits. A spherical or standard mercadian underlying plot,
-        not sure which one yet though.
         Args:
             latitude (float): the latitude of the crash location on the Earth.
             longitude (float): the longitude of the crash location on the Earth.
             display_plot (bool): a conditional stating whether the user wants the plot to display.
 
+        TODO: I would like to eventually add a dotted line on the same plot so that 
+        one can see its trajectory before it hits. A spherical or standard mercadian underlying plot,
+        not sure which one yet though.
         
         """
 
@@ -113,9 +111,7 @@ class Plotting:
         data = [(latitude, longitude)]
 
         empty = pd.DataFrame(data, columns=columns)
-        #fig = px.line_map(empty, lat='latitude', lon='longitude', zoom=1)
         
-        #fig.update_layout(map_style="open-street-map", map_zoom=1)
         fig = px.scatter_map(empty,
                              lat=empty['latitude'],
                              lon=empty['longitude'],
