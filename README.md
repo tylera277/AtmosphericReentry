@@ -11,13 +11,13 @@ for as the levels increase.
    * Simple ballistics trajectory with only gravity
    * No atmospheric effects (i.e. no drag)
 
-     ** Desired output: Get the Runge-Kutta integrator functioning and have the model predict a single landing point, given the crafts initial conditions. **
+     **Desired output: Get the Runge-Kutta integrator functioning and have the model predict a single landing point, given the crafts initial conditions.**
 ## Level 2:
    * Add atmospheric effects (simple model of atmosphere density to start)
    * Basic drag, so slightly more complex spacecraft model (Im not delving into any computational fluid dynamics in this project,
      so it will still be a high level approximation in the end)
 
-     ** Desired output: Generate a basic probability distribution of where, given initial conditions, the spacecraft will likely land. **
+     **Desired output: Generate a basic probability distribution of where, given initial conditions, the spacecraft will likely land.**
 ## Level 3:
    * More complex/realistic atmospheric density and effects approximation.
    * Start to delve into basic thermal effects felt on the spacecraft. I want to eventually have the criteria of it not burning up too quickly given the crafts material constraints.
