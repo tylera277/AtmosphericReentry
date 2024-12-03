@@ -10,11 +10,13 @@ for as the levels increase.
    * Treat the spacecraft as a point mass
    * Simple ballistics trajectory with only gravity
    * No atmospheric effects (i.e. no drag)
+
      ** Desired output: Get the Runge-Kutta integrator functioning and have the model predict a single landing point, given the crafts initial conditions. **
 ## Level 2:
    * Add atmospheric effects (simple model of atmosphere density to start)
    * Basic drag, so slightly more complex spacecraft model (Im not delving into any computational fluid dynamics in this project,
      so it will still be a high level approximation in the end)
+
      ** Desired output: Generate a basic probability distribution of where, given initial conditions, the spacecraft will likely land. **
 ## Level 3:
    * More complex/realistic atmospheric density and effects approximation.
