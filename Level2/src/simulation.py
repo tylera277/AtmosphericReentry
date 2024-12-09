@@ -6,10 +6,9 @@ from typing import List, Tuple, Optional
 from abc import ABC, abstractmethod
 
 from .config.simulation_config import SimulationConfig
-
 from .spacecraft import Spacecraft
 from .planet import Planet
-
+from .physics import Physics
 
 class Simulation:
     """
@@ -24,7 +23,8 @@ class Simulation:
     def __init__(self, 
                  config: SimulationConfig, 
                  spacecraft: Spacecraft, 
-                 planet: Planet) -> None:
+                 planet: Planet,
+                 physics: Physics) -> None:
         """
         Initialize the simulation with configuration parameters and objects.
 
@@ -42,7 +42,7 @@ class Simulation:
 
         self.spacecraft = spacecraft
         self.planet = planet
-
+        self.physics = physics
         self.config = config
         
 
@@ -75,7 +75,7 @@ class Simulation:
 
         # Main simulation loop
         while current_time < self.config.end_time:
-
+            print("curr time: ", current_time)
             # Advance one time step
             try:
                 self._integrate_step()
@@ -88,6 +88,7 @@ class Simulation:
             # Check for termination conditions.
             # (i.e. it hit the planets surface)
             if self._check_surface_impact():
+                print("Surface Impact")
                 self._termination_reason = "Surface Impact"
                 break
 
@@ -126,19 +127,22 @@ class Simulation:
         k_v = np.zeros((5, 3))
 
         # First stage
-        k_v[1] = self.planet.calculate_gravity(self.spacecraft.position)
+        k_v[1] = self.physics.get_acceleration(self.spacecraft.position, self.spacecraft.velocity)
         k_r[1] = self.spacecraft.velocity
 
         # Second stage
-        k_v[2] = self.planet.calculate_gravity( self.spacecraft.position + (self.config.time_step_size / 2.0)*k_r[1] )
+        k_v[2] = self.physics.get_acceleration( (self.spacecraft.position + (self.config.time_step_size / 2.0)*k_r[1]), 
+                                         (self.spacecraft.velocity + k_v[1] * (self.config.time_step_size / 2.0)) )
         k_r[2] = self.spacecraft.velocity + k_v[1] * (self.config.time_step_size / 2.0)
 
         # Third stage
-        k_v[3] = self.planet.calculate_gravity( self.spacecraft.position + (self.config.time_step_size / 2.0)*k_r[2] )
+        k_v[2] = self.physics.get_acceleration( (self.spacecraft.position + (self.config.time_step_size / 2.0)*k_r[2]), 
+                                         (self.spacecraft.velocity + k_v[2] * (self.config.time_step_size / 2.0)) )
         k_r[3] = self.spacecraft.velocity + k_v[2] * (self.config.time_step_size / 2.0)
 
         # Fourth stage
-        k_v[4] = self.planet.calculate_gravity( self.spacecraft.position + (self.config.time_step_size)*k_r[3] )
+        k_v[2] = self.physics.get_acceleration( (self.spacecraft.position + (self.config.time_step_size)*k_r[3]), 
+                                         (self.spacecraft.velocity + k_v[3] * self.config.time_step_size) )
         k_r[4] = self.spacecraft.velocity + k_v[3] * self.config.time_step_size
 
         return k_r, k_v

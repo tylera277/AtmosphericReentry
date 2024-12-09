@@ -1,11 +1,7 @@
-# Level 1 of the reentry model:
-#   - treat the spacecraft as a point mass
-#   - No atmosphere on Earth
-#   - Assuming the Earth is a perfect sphere/circle
-#   - Simple ballistics trajectory
+# Level 2
 
 # Author: Tyler Allen
-# Date started: 17 November 2024
+# Date started: 02 December 2024
 
 
 import yaml
@@ -15,6 +11,7 @@ from src.spacecraft import Spacecraft
 from src.planet import Planet
 from src.simulation import Simulation
 from src.plotting import Plotting
+from src.physics import Physics
 
 from src.config.configuration_manager import ConfigurationManager
 
@@ -27,9 +24,11 @@ def main():
     
     spacecraft = Spacecraft(config.spacecraft)
     planet = Planet(config.planet)
+    physics = Physics(config.physics, planet, spacecraft)
     simulation = Simulation(config.simulation,
                             spacecraft = spacecraft,
-                            planet = planet)
+                            planet = planet,
+                            physics= physics)
     
     plotter = Plotting()
 
@@ -40,11 +39,9 @@ def main():
 
 
     # Plot the results of the simulation, namely the position of the spacecraft
-    plotter.simple_orbital_trajectory(simulation.get_trajectory(), display_plot=False)
+    plotter.simple_orbital_trajectory(simulation.get_trajectory(), display_plot=True)
+    plotter.simple_2d_plot(simulation.get_trajectory(), display_plot=True)
 
-
-    lat, lon = plotter.crash_point_latLon_on_actual_earth(simulation.get_trajectory()[-1], simulation.get_times()[-1])
-    plotter.plot_point_on_map(latitude=lat, longitude=lon, display_plot=True)
 
 if __name__ == "__main__":
     main()
