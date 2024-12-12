@@ -52,7 +52,7 @@ Then when drag is included into the model.
 And if one compares this to what is actually observed, such as this velocity profile of an asteroid entering Earths atmosphere, there can be seen
 pretty solid agreeement just from a qualitative point of view.
 <p align="center">
-![Screenshot 2024-12-11 at 9 47 50 PM](https://github.com/user-attachments/assets/751cb823-f668-44d5-8af5-274ebab9c6bf)
+![Screenshot 2024-12-11 at 9 47 50 PM](https://github.com/user-attachments/assets/9c8b9161-f181-48e0-b0b1-61be0da69eff)
 </p>
 
 
