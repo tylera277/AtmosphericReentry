@@ -24,8 +24,7 @@ class Plotting:
         
         """
 
-        fig = plt.figure(figsize=(10, 8))
-        ax = fig.add_subplot(111, projection='3d')
+        
 
 
         # Making a sphere to represent the Earths surface
@@ -35,19 +34,26 @@ class Plotting:
         y_sphere = 6371000 * np.outer(np.sin(u), np.sin(v))
         z_sphere = 6371000 * np.outer(np.ones(np.size(u)), np.cos(v))
     
-        ax.plot_surface(x_sphere, y_sphere, z_sphere, alpha=0.3)
+        
 
         # Extracting the x,y,z positions from the list received
         x_positions = [item[0] for item in list_of_positions]
         y_positions = [item[1] for item in list_of_positions]
         z_positions = [item[2] for item in list_of_positions]
 
-        ax.set_xlim(-1e7, 1e7)
-        ax.set_ylim(-1e7, 1e7)
+       
 
-        ax.plot(x_positions, y_positions, z_positions)
+        
 
         if display_plot:
+            fig = plt.figure(figsize=(10, 8))
+            ax = fig.add_subplot(111, projection='3d')
+
+            ax.set_xlim(-1e7, 1e7)
+            ax.set_ylim(-1e7, 1e7)
+
+            ax.plot_surface(x_sphere, y_sphere, z_sphere, alpha=0.3)
+            ax.plot(x_positions, y_positions, z_positions)
             plt.show()
 
     def crash_point_latLon_on_actual_earth(self, crash_location_on_sphere: np.ndarray, time_elapsed: float):
@@ -137,7 +143,7 @@ class Plotting:
         TODO: Enable this function to be able to slice the spacecrafts trajectory along its own orbital
         plane instead of only along a x,y or z plane direction. This should work potentially until I add
         forces that act in a direction not parallel/in line with the crafts velocity vector, as it will then
-        break a nicely sliced plane.
+        break/no longer be in a nicely sliced plane.
         
         """
 
@@ -157,11 +163,40 @@ class Plotting:
 
         # TODO: change these limits to represent the actual orbital limits
         # of the spacecrafts' initial positions.
-        ax.set_xlim([-6771000, 6771000])
-        ax.set_ylim([-6771000, 6771000])
+        x_max = np.max(x_positions)
+        x_min = np.min(x_positions)
+        y_max = np.max(y_positions)
+        y_min = np.max(y_positions)
+        scale_factor = 10
+        ax.set_xlim([-x_max-scale_factor*x_max, x_max+scale_factor*x_max])
+        ax.set_ylim([-y_max-scale_factor*y_max, y_max+scale_factor*y_max])
         
         if display_plot:
             ax.plot(x_circle, y_circle)
             ax.plot(x_positions, y_positions)
             plt.show()
 
+
+    def plot_velocity_distribution(self, list_of_velocities: List[np.ndarray],
+                                   list_of_times: List[float],
+                                   display_plot: bool,
+                                   save_plot: bool):
+
+
+        fig, ax = plt.subplots(figsize=(7, 7))
+        ax.set_xlabel("Time (seconds)")
+        ax.set_ylabel("Velocity magnitude (m/s)")
+        ax.set_ylim([0, 10000])
+
+        ax.set_title("Velocity vs. Time of Spacecraft w/ atmosphere")
+        # Get the magnitude of the velocity of the spacecraft
+        total_velocity = [np.linalg.norm(item) for item in list_of_velocities]
+
+        if display_plot:
+            ax.plot(list_of_times, total_velocity)
+
+            if save_plot:
+                plt.savefig("plots/velocity_vs_time_atmosphere.pdf", bbox_inches='tight')
+                plt.show()
+            else:
+                plt.show()

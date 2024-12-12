@@ -39,9 +39,13 @@ def main():
 
 
     # Plot the results of the simulation, namely the position of the spacecraft
-    plotter.simple_orbital_trajectory(simulation.get_trajectory(), display_plot=True)
-    plotter.simple_2d_plot(simulation.get_trajectory(), display_plot=True)
+    plotter.simple_orbital_trajectory(simulation.get_trajectory(), display_plot=False)
+    plotter.simple_2d_plot(simulation.get_trajectory(), display_plot=False)
 
+    plotter.plot_velocity_distribution(simulation.get_velocities(), 
+                                       simulation.get_times(),
+                                       display_plot= True,
+                                       save_plot= True)
 
 if __name__ == "__main__":
     main()

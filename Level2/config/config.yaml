@@ -6,8 +6,8 @@
 spacecraft:
 
   initial_state:
-    position: [6771000, 0, 0]
-    velocity: [0, 3070, 0]
+    position: [7000000, 0, 0]
+    velocity: [-8000, 0, 0]
 
   design_parameters:
     drag_coefficient: 0.275  
@@ -30,7 +30,7 @@ simulation:
   # Time settings
   start_time: 0  # seconds
   end_time: 1000  # seconds
-  time_step_size: 100  # seconds
+  time_step_size: 0.01  # seconds
 
   # Need to implement these options and parameters for the integrator into my code eventually.
   integrator: 

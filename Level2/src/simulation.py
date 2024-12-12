@@ -75,7 +75,7 @@ class Simulation:
 
         # Main simulation loop
         while current_time < self.config.end_time:
-            print("curr time: ", current_time)
+            
             # Advance one time step
             try:
                 self._integrate_step()
@@ -171,6 +171,21 @@ class Simulation:
         for use in external applications.
         """
         return self._position
+    
+    def get_velocities(self) -> List[np.ndarray]:
+        """ 
+        Returns the velocities that were calculated for the spacecraft.
+        """
+        return self._velocity
+    
+    def get_times(self) -> List[float]:
+        """
+        Returns the times recorded during the simulation calculations.
+        
+        """
+        return self._times
+    
+
 
     def get_times(self) -> List[np.ndarray]:
         """ 
