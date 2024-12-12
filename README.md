@@ -26,21 +26,33 @@ for as the levels increase.
 
 ## Level 1 Outputs:
 This is the simple trajectory model that is generated given some spacecrafts initial conditions such as position and velocity.
+
+<p align="center">
 ![Screenshot 2024-12-02 at 8 05 09 PM](https://github.com/user-attachments/assets/4743519c-29e8-484c-9ae4-7ed1563d19ed)
-As can be seen in this example, it was given such a velocity that it will continually miss the surface.
+</p>
 
 This second plot is showing the point that the spacecraft will hit the surface and where it believes that location correlates to on the actual Earth.
+<p align="center">
 <img width="1350" alt="Screenshot 2024-12-02 at 8 13 05 PM" src="https://github.com/user-attachments/assets/06cc66f0-d3e9-449b-878a-91f5b7483034">
+</p>
 
 ## Level 2 Outputs:
 After implementing the drag into the model, I then created a plot of how the velocity changes over time.
 First, without any drag or atmospheric effects.
+
+<p align="center">
 <img width="614" alt="Screenshot 2024-12-11 at 9 45 02 PM" src="https://github.com/user-attachments/assets/273aa2a8-8526-44a4-8b4a-1c6a57c8be9d" />
+</p>
+
 Then when drag is included into the model.
+<p align="center">
 <img width="614" alt="Screenshot 2024-12-11 at 9 45 16 PM" src="https://github.com/user-attachments/assets/d63a6460-6850-46d0-8247-6d4b4c14804c" />
+</p>
+
 And if one compares this to what is actually observed, such as this velocity profile of an asteroid entering Earths atmosphere, there can be seen
 pretty solid agreeement just from a qualitative point of view.
+<p align="center">
 ![Screenshot 2024-12-11 at 9 47 50 PM](https://github.com/user-attachments/assets/751cb823-f668-44d5-8af5-274ebab9c6bf)
-
+</p>
 
 
